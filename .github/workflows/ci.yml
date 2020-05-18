@@ -32,7 +32,7 @@ jobs:
       # importing a database dump, running a string of migrations, running SQL
       # files, or something else.
       - name: "Load database schema"
-        run: node ./load-database-schema.js
+        run: yarn && node ./load-database-schema.js
 
       - name: "Run PGLint checks"
         uses: pglint/action@master
