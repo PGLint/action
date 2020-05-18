@@ -73,7 +73,7 @@ jobs:
         run: psql -f my_database_schema.sql "$DATABASE_URL"
 
       - name: "Run PGLint checks"
-        uses: pglint/action
+        uses: pglint/action@master
         with:
           project: myorganization/myproject
 ```
