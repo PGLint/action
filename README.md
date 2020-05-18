@@ -2,9 +2,38 @@
 
 > [GitHub Action](https://help.github.com/en/actions) for running [PGLint](https://pglint.com) database checks.
 
+## How it works
+
+`pglint/action` will run an introspection query against your database
+(identified by the `DATABASE_URL` envvar), compress it with gzip, and then
+upload it to the given `project` on [PGLint](https://pglint.com) using your
+`PGLINT_TOKEN` secret. It will wait for the results (up to 30 seconds), and
+will pass if no errors were detected.
+
+## Inputs:
+
+Environmental variables:
+
+- `PGLINT_TOKEN` (required, secret): required to permit upload to PGLint.com; get your token for
+  free from the "instructions" page in your https://pglint.com project.
+- `DATABASE_URL` (required): a URL to the database we'll run the checks against
+
+Input arguments:
+
+- `project` (required): the project UUID or spec
+  (`organizationname/projectname`) to run the checks within
+- `pass-on-timeout`: set this to `true` if we should pass the check if we
+  couldn't get the results from PGLint.sh within the 30 second timeout window
+
+## Outputs:
+
+- `status`: `PASS`, `TIMEOUT`, `ERROR` or `FAIL`
+
+If you'd like more outputs, get in touch!
+
 ## Example
 
-You also need to add the `PGLINT_TOKEN` secret to your repository.
+Don't forget to add the `PGLINT_TOKEN` secret to your repository.
 
 ```yaml
 name: Database checks
@@ -35,8 +64,14 @@ jobs:
     steps:
       - name: "Checkout"
         uses: actions/checkout@v1
+
+      # Replace this with whatever your project needs to do to get your
+      # database up and running in the attached postgres service. This might be
+      # importing a database dump, running a string of migrations, running SQL
+      # files, or something else.
       - name: "Load database schema"
         run: psql -f my_database_schema.sql "$DATABASE_URL"
+
       - name: "Run PGLint checks"
         uses: pglint/action
         with:
