@@ -379,7 +379,6 @@ const pg = __webpack_require__(792);
 const { INTROSPECTION_QUERY } = __webpack_require__(209);
 const { inspect } = __webpack_require__(669);
 const { gzipSync } = __webpack_require__(761);
-const { execSync } = __webpack_require__(129);
 const fetch = __webpack_require__(454);
 const FormData = __webpack_require__(928);
 
@@ -392,20 +391,12 @@ function censoredStringify(parsed) {
     }
     output += "@";
   }
-  if (parsed.hostname) {
+  if (parsed.host) {
     output += "xxxxxxx";
   }
   output += "/";
   output += parsed.database || "";
   return output;
-}
-
-function tryExec(cmd) {
-  try {
-    return execSync(cmd);
-  } catch (e) {
-    return null;
-  }
 }
 
 async function main() {
@@ -437,8 +428,12 @@ async function main() {
 
   console.log(`Running database checks again ${censoredConnectionString}`);
 
-  const gitBranch = tryExec("git rev-parse --abbrev-ref HEAD");
-  const gitHash = tryExec("git rev-parse --verify HEAD");
+  // git rev-parse --abbrev-ref HEAD
+  const gitBranch = process.env.GITHUB_REF
+    ? process.env.GITHUB_REF.replace(/^refs\/heads\//, "")
+    : null;
+  // git rev-parse --verify HEAD
+  const gitHash = process.env.GITHUB_SHA;
 
   const pool = new pg.Pool(parsed);
   try {
@@ -546,13 +541,6 @@ main().then(
   }
 );
 
-
-/***/ }),
-
-/***/ 129:
-/***/ (function(module) {
-
-module.exports = require("child_process");
 
 /***/ }),
 

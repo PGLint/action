@@ -30,7 +30,7 @@ function censoredStringify(parsed) {
     }
     output += "@";
   }
-  if (parsed.hostname) {
+  if (parsed.host) {
     output += "xxxxxxx";
   }
   output += "/";
