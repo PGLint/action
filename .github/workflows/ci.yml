@@ -36,5 +36,7 @@ jobs:
 
       - name: "Run PGLint checks"
         uses: pglint/action@master
+        env:
+          PGLINT_TOKEN: ${{ secrets.PGLINT_TOKEN }}
         with:
-          project: myorganization/myproject
+          project: pglint/action
