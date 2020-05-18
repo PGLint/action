@@ -49,7 +49,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12
+        image: postgres:11
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -70,10 +70,12 @@ jobs:
       # importing a database dump, running a string of migrations, running SQL
       # files, or something else.
       - name: "Load database schema"
-        run: psql -f my_database_schema.sql "$DATABASE_URL"
+        run: yarn && node ./load-database-schema.js
 
       - name: "Run PGLint checks"
         uses: pglint/action@master
+        env:
+          PGLINT_TOKEN: ${{ secrets.PGLINT_TOKEN }}
         with:
           project: myorganization/myproject
 ```
