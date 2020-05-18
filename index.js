@@ -169,6 +169,18 @@ main().then(
     }
   },
   (error) => {
+    const poto = core.getInput("pass-on-timeout");
+    if (
+      poto &&
+      (error.code === "ECONNREFUSED" ||
+        error.code === "ETIMEOUT" ||
+        error.type === "request-timeout")
+    ) {
+      console.log(
+        "Failed to get results from pglint.com, but pass-on-timeout is set; passing."
+      );
+      return;
+    }
     core.setFailed(error.message);
   }
 );
