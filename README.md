@@ -4,6 +4,8 @@
 
 ## Example
 
+You also need to add the `PGLINT_TOKEN` secret to your repository.
+
 ```yaml
 name: Database checks
 
@@ -37,4 +39,6 @@ jobs:
         run: psql -f my_database_schema.sql "$DATABASE_URL"
       - name: "Run PGLint checks"
         uses: pglint/action
+        with:
+          project: myorganization/myproject
 ```
