@@ -18,7 +18,6 @@ const pg = require("pg");
 const { INTROSPECTION_QUERY } = require("./introspectionQuery");
 const { inspect } = require("util");
 const { gzipSync } = require("zlib");
-const { execSync } = require("child_process");
 const fetch = require("node-fetch");
 const FormData = require("form-data");
 
@@ -37,14 +36,6 @@ function censoredStringify(parsed) {
   output += "/";
   output += parsed.database || "";
   return output;
-}
-
-function tryExec(cmd) {
-  try {
-    return execSync(cmd);
-  } catch (e) {
-    return null;
-  }
 }
 
 async function main() {
@@ -76,8 +67,12 @@ async function main() {
 
   console.log(`Running database checks again ${censoredConnectionString}`);
 
-  const gitBranch = tryExec("git rev-parse --abbrev-ref HEAD");
-  const gitHash = tryExec("git rev-parse --verify HEAD");
+  // git rev-parse --abbrev-ref HEAD
+  const gitBranch = process.env.GITHUB_REF
+    ? process.env.GITHUB_REF.replace(/^refs\/heads\//, "")
+    : null;
+  // git rev-parse --verify HEAD
+  const gitHash = process.env.GITHUB_SHA;
 
   const pool = new pg.Pool(parsed);
   try {
